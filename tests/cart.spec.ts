@@ -3,24 +3,26 @@ import { LoginPage } from '../pages/login.page';
 import { InventoryPage } from '../pages/inventory.page';
 import { CartPage } from '../pages/cart.page';
 
+// 🛒 กลุ่ม Cart Tests
 test.describe('🛒 Cart Tests', () => {
 
   let login: LoginPage;
   let inventory: InventoryPage;
   let cart: CartPage;
 
+  // ✅ setup: login ก่อนทุก test
   test.beforeEach(async ({ page }) => {
     login = new LoginPage(page);
     inventory = new InventoryPage(page);
     cart = new CartPage(page);
 
-    await login.goto(); 
-    await login.login('standard_user', 'secret_sauce'); 
+    await login.goto(); // เปิดเว็บ
+    await login.login('standard_user', 'secret_sauce'); // login
   });
 
   // TC_011
   test('SL_TC_011 - Add multiple items', async () => {
-    await inventory.addMultipleItems(3); 
+    await inventory.addMultipleItems(3); // เพิ่ม 3 รายการ
 
     await expect(inventory.getCartCount()).toHaveText('3'); // ตรวจจำนวน
   });
