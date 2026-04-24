@@ -1,0 +1,13 @@
+{
+    "name": "swaglabs-automation",
+    "version": "1.0.0",
+    "scripts": {
+        "test": "playwright test",
+        "report": "playwright show-report",
+        "test:report": "playwright test && playwright show-report"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.40.0",
+        "typescript": "^5.0.0"
+    }
+}
