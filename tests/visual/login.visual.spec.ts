@@ -1,32 +1,71 @@
 import { test, expect } from '@playwright/test';
 
-// VISUAL TESTING
-// ใช้ตรวจสอบ UI ด้วย screenshot comparison (visual regression)
-// ครั้งแรกที่รัน จะสร้าง baseline snapshot อัตโนมัติ
+// 👁️ VISUAL TESTING
+// ใช้ตรวจสอบ UI ด้วย screenshot comparison (Visual Regression Testing)
 
-// หน้า Login
+const baseUrl = 'https://www.saucedemo.com/';
+
+// =========================
+// 🔑 LOGIN PAGE
+// =========================
 test('VISUAL_TC_001 - Login Page UI', async ({ page }) => {
 
-  await page.goto('https://www.saucedemo.com/');
+  // 📏 fix viewport ให้เหมือนกันทุก environment (สำคัญมาก)
+  await page.setViewportSize({ width: 1280, height: 720 });
 
-  // 📸 ถ้ายังไม่มี baseline → จะสร้างให้เองครั้งแรก
+  await page.goto(baseUrl);
+
+  // ⏳ รอ page โหลดนิ่ง
+  await page.waitForLoadState('networkidle');
+
+  // 📴 ปิด animation ลด pixel diff
+  await page.addStyleTag({
+    content: `
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    `
+  });
+
+  // 📸 screenshot comparison
   await expect(page).toHaveScreenshot('login-page.png', {
-    fullPage: true
+    fullPage: true,
+    animations: 'disabled'
   });
 });
 
 
-// หน้า Inventory
+// =========================
+// 🛒 INVENTORY PAGE
+// =========================
 test('VISUAL_TC_002 - Inventory Page UI', async ({ page }) => {
 
-  await page.goto('https://www.saucedemo.com/');
+  await page.setViewportSize({ width: 1280, height: 720 });
 
+  await page.goto(baseUrl);
+
+  // 🔐 login flow
   await page.fill('#user-name', 'standard_user');
   await page.fill('#password', 'secret_sauce');
   await page.click('#login-button');
 
-  // 📸 snapshot หน้า inventory
+  // ⏳ รอหน้าโหลดหลัง login
+  await page.waitForLoadState('networkidle');
+
+  // 📴 ปิด animation
+  await page.addStyleTag({
+    content: `
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    `
+  });
+
+  // 📸 snapshot inventory page
   await expect(page).toHaveScreenshot('inventory-page.png', {
-    fullPage: true
+    fullPage: true,
+    animations: 'disabled'
   });
 });

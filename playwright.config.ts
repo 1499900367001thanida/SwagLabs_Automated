@@ -5,7 +5,10 @@ export default defineConfig({
     headless: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    trace: 'on-first-retry'
+    trace: 'on-first-retry',
+    ignoreHTTPSErrors: true,
+    actionTimeout: 10000,
+    navigationTimeout: 30000
   },
   reporter: [
     ['html', { open: 'never' }]
