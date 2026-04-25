@@ -28,8 +28,14 @@ package.json  → จัดการ dependencies และ script
 ทดสอบ flow การซื้อสินค้าครบขั้นตอน
 ตั้งแต่ login → เลือกสินค้า → checkout → success
 
-### API (API Testing)
-โปรเจกต์นี้ ไม่ได้ใช้ API จริงของระบบ SauceDemo โดยตรง เนื่องจาก SauceDemo เป็นระบบ demo สำหรับ UI และไม่มี backend API ให้ใช้งาน
+### API Testing (Request Context Concept)
+โปรเจกต์นี้ใช้ Playwright request context ในการทดสอบ HTTP behavior
+
+เนื่องจากระบบ เป็นระบบ demo ที่ไม่มี public backend API โดยตรง  
+ดังนั้นการทดสอบจะเป็นในรูปแบบ:
+- HTTP request validation
+- response status checking
+- endpoint behavior testing
 
 ### Visual Testing
 ใช้ SauceDemo สำหรับตรวจสอบ UI ด้วยการเปรียบเทียบภาพ (Screenshot Comparison)
