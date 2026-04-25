@@ -25,11 +25,11 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # ✅ run test อย่างเดียว (CI ต้อง verify)
+      # 🧪 Run tests (CI verify only)
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --reporter=html
 
-      # 📊 Upload report
+      # 📊 Upload HTML Report
       - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -37,7 +37,7 @@ jobs:
           name: playwright-report
           path: playwright-report
 
-      # 📸 Upload test results (debug CI fail)
+      # 📸 Upload test results (debug)
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -45,10 +45,12 @@ jobs:
           name: test-results
           path: test-results
 
-      # 🖼️ Upload snapshots (debug visual diff)
-      - name: Upload snapshots
+      # 🖼️ Upload screenshots (debug only)
+      - name: Upload snapshots diff
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: snapshots
-          path: tests/visual/**-snapshots
+          name: visual-diffs
+          path: |
+            test-results/**/*
+            **/test-results/**
