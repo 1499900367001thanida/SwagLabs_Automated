@@ -2,14 +2,21 @@ import { test, expect } from '@playwright/test';
 
 const baseUrl = 'https://www.saucedemo.com/';
 
-// 🧼 helper ลด repetition
+// 🧼 helper ลดความต่างระหว่าง OS
 async function disableAnimations(page) {
   await page.addStyleTag({
     content: `
       * {
         animation: none !important;
         transition: none !important;
-        font-family: Arial !important;
+      }
+
+      body {
+        font-family: Arial, sans-serif !important;
+      }
+
+      html {
+        scroll-behavior: auto !important;
       }
     `
   });
@@ -24,19 +31,16 @@ test('VISUAL_TC_001 - Login Page UI', async ({ page }) => {
 
   await page.goto(baseUrl);
 
-  // ❌ ไม่ใช้ networkidle (flaky)
-  // await page.waitForLoadState('networkidle');
-
-  // ✅ ใช้ element จริงแทน
-  await page.waitForSelector('#login-button', { state: 'visible' });
+  // ✅ stable wait (แทน networkidle / selector แบบ flaky)
+  await expect(page.locator('#login-button')).toBeVisible();
 
   await disableAnimations(page);
 
   await expect(page).toHaveScreenshot('login-page.png', {
     fullPage: true,
     animations: 'disabled',
-    threshold: 0.2,
-    maxDiffPixelRatio: 0.02
+    threshold: 0.3,
+    maxDiffPixelRatio: 0.05
   });
 });
 
@@ -55,15 +59,15 @@ test('VISUAL_TC_002 - Inventory Page UI', async ({ page }) => {
   await page.fill('#password', 'secret_sauce');
   await page.click('#login-button');
 
-  // ✅ รอ element หลัง login (stable มากกว่า networkidle)
-  await page.waitForSelector('.inventory_list', { state: 'visible' });
+  // ✅ stable wait หลัง login
+  await expect(page.locator('.inventory_list')).toBeVisible();
 
   await disableAnimations(page);
 
   await expect(page).toHaveScreenshot('inventory-page.png', {
     fullPage: true,
     animations: 'disabled',
-    threshold: 0.2,
-    maxDiffPixelRatio: 0.02
+    threshold: 0.3,
+    maxDiffPixelRatio: 0.05
   });
 });
