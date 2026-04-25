@@ -20,23 +20,35 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
+      # ✅ run test อย่างเดียว (CI ต้อง verify)
       - name: Run Playwright tests
         run: npx playwright test
 
+      # 📊 Upload report
       - name: Upload HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: html-report
+          name: playwright-report
           path: playwright-report
 
-      - name: Update snapshots (CI)
-        run: npx playwright test --update-snapshots
+      # 📸 Upload test results (debug CI fail)
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results
 
-      - name: Generate snapshots (first run only)
-        run: npx playwright test --update-snapshots
+      # 🖼️ Upload snapshots (debug visual diff)
+      - name: Upload snapshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshots
+          path: tests/visual/**-snapshots

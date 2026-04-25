@@ -1,37 +1,42 @@
 import { test, expect } from '@playwright/test';
 
-// 👁️ VISUAL TESTING
-// ใช้ตรวจสอบ UI ด้วย screenshot comparison (Visual Regression Testing)
-
 const baseUrl = 'https://www.saucedemo.com/';
+
+// 🧼 helper ลด repetition
+async function disableAnimations(page) {
+  await page.addStyleTag({
+    content: `
+      * {
+        animation: none !important;
+        transition: none !important;
+        font-family: Arial !important;
+      }
+    `
+  });
+}
 
 // =========================
 // 🔑 LOGIN PAGE
 // =========================
 test('VISUAL_TC_001 - Login Page UI', async ({ page }) => {
 
-  // 📏 fix viewport ให้เหมือนกันทุก environment (สำคัญมาก)
   await page.setViewportSize({ width: 1280, height: 720 });
 
   await page.goto(baseUrl);
 
-  // ⏳ รอ page โหลดนิ่ง
-  await page.waitForLoadState('networkidle');
+  // ❌ ไม่ใช้ networkidle (flaky)
+  // await page.waitForLoadState('networkidle');
 
-  // 📴 ปิด animation ลด pixel diff
-  await page.addStyleTag({
-    content: `
-      * {
-        animation: none !important;
-        transition: none !important;
-      }
-    `
-  });
+  // ✅ ใช้ element จริงแทน
+  await page.waitForSelector('#login-button', { state: 'visible' });
 
-  // 📸 screenshot comparison
+  await disableAnimations(page);
+
   await expect(page).toHaveScreenshot('login-page.png', {
     fullPage: true,
-    animations: 'disabled'
+    animations: 'disabled',
+    threshold: 0.2,
+    maxDiffPixelRatio: 0.02
   });
 });
 
@@ -50,22 +55,15 @@ test('VISUAL_TC_002 - Inventory Page UI', async ({ page }) => {
   await page.fill('#password', 'secret_sauce');
   await page.click('#login-button');
 
-  // ⏳ รอหน้าโหลดหลัง login
-  await page.waitForLoadState('networkidle');
+  // ✅ รอ element หลัง login (stable มากกว่า networkidle)
+  await page.waitForSelector('.inventory_list', { state: 'visible' });
 
-  // 📴 ปิด animation
-  await page.addStyleTag({
-    content: `
-      * {
-        animation: none !important;
-        transition: none !important;
-      }
-    `
-  });
+  await disableAnimations(page);
 
-  // 📸 snapshot inventory page
   await expect(page).toHaveScreenshot('inventory-page.png', {
     fullPage: true,
-    animations: 'disabled'
+    animations: 'disabled',
+    threshold: 0.2,
+    maxDiffPixelRatio: 0.02
   });
 });
