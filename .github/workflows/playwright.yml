@@ -37,3 +37,6 @@ jobs:
 
       - name: Update snapshots (CI)
         run: npx playwright test --update-snapshots
+
+      - name: Generate snapshots (first run only)
+        run: npx playwright test --update-snapshots
